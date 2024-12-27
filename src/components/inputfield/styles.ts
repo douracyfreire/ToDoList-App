@@ -7,6 +7,7 @@ const Container = styled.View`
 const Input = styled.TextInput<{ hasError: boolean }>`
  height: 52px;
  border: 2px solid ${({ hasError }) => (hasError ? colors.danger : colors.gray[300])};
+ background-color: ${colors.gray[100]};
  border-radius: 8px;
  padding: 0 18px;
  font-family: 'Inter-Regular';

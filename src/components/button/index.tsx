@@ -12,8 +12,8 @@ export default function Button({
 } : ButtonProps){
  return(
   <Styles.Button onPress={onPress}>
-    {icon && <Styles.ButtonIcon>{icon}</Styles.ButtonIcon>}
     {title && <Styles.ButtonText>{title}</Styles.ButtonText>}
+    {icon && <Styles.ButtonIcon>{icon}</Styles.ButtonIcon>}
   </Styles.Button>
  );
 }
