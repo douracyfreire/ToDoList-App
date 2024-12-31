@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 import { colors } from "@/styles/theme";
 import { Dimensions } from "react-native";
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const Container = styled.View`
  flex: 1;
@@ -36,6 +36,10 @@ const TasksContent = styled.View`
   gap: 20px;
 `;
 
+const TaskItems = styled.ScrollView`
+  height: ${height * 0.65};
+`;
+
 const AddTask = styled.View`
   position: absolute;
   width: 110px;
@@ -43,8 +47,26 @@ const AddTask = styled.View`
   right: ${width * 0.065}px;
 `;
 
+const TaskDetails = styled.Text`
+  font-family: 'Inter-Regular';
+  font-size: 12px;
+  color: ${colors.gray[600]}
+`;
+
+const ButtonRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 26px;
+  gap: 2%;
+
+`;
+
+const ButtonItem = styled.View`
+  flex: 1;
+`;
+
 const Styles = {
- Container, Header, Logout, Main, TasksContent, AddTask,
+ Container, Header, Logout, Main, TasksContent, TaskItems, AddTask, TaskDetails, ButtonRow, ButtonItem,
 }
 
 export default Styles;
