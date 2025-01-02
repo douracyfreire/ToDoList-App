@@ -37,7 +37,7 @@ const TasksContent = styled.View`
 `;
 
 const TaskItems = styled.ScrollView`
-  height: ${height * 0.65};
+  height: ${height * 0.65}px;
 `;
 
 const AddTask = styled.View`

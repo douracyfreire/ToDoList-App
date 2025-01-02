@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 import { colors } from "@/styles/theme";
 
-const Button = styled.TouchableOpacity<{ disabled: boolean}>`
+const Button = styled.TouchableOpacity<{ disabled?: boolean}>`
  background-color: ${({ disabled }) => disabled ? colors.gray[500] : colors.purple.dark};
  height: 52px;
  flex-direction: row;
