@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { FlatList, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import Styles from "./styles";
 import Icons from "@/assets/icons";
@@ -6,15 +7,12 @@ import ActionInput from "@/components/actioninput";
 import TaskFilter from "@/components/taskfilter";
 import EmptyState from "@/components/emptystate";
 import Button from "@/components/button";
-import Task from "@/components/task";
-import { FlatList } from "react-native";
+import TaskItem from "@/components/task";
 import Modal from "@/components/modal";
-
-interface Task {
-  id: string;
-  text: string;
-  completed: boolean;
-}
+import AlertModal from "@/components/alertmodal";
+import Loading from "@/components/loading";
+import { getTasks, createTask, updateTask, deleteTask } from "@/services/taskServices";
+import { Task } from "@/services/simulatedApi";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -25,35 +23,78 @@ export default function HomeScreen() {
   const [activeFilter, setActiveFilter] = useState<"created" | "completed">("created");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchedTasks, setSearchedTasks] = useState<Task[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleAddTask() {
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  async function fetchTasks() {
+    try {
+      setIsLoading(true);
+      const fetchedTasks = await getTasks();
+      setTasks(fetchedTasks);
+      setError(null);
+    } catch {
+      setError("Erro ao receber dados da API.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleAddTask() {
     if (newTask.trim()) {
-      setTasks([...tasks, { id: Date.now().toString(), text: newTask.trim(), completed: false }]);
+      const createdTask = await createTask(newTask.trim());
+      setTasks((prev) => [...prev, createdTask]);
       setNewTask("");
       setModalType(null);
     }
   }
 
-  function handleToggleTask(id: string) {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  async function handleToggleTask(id: string) {
+    try {
+      const taskToUpdate = tasks.find((task) => task.id === id);
+      if (taskToUpdate) {
+        const updatedTask = await updateTask(id, {
+          text: taskToUpdate.text,
+          completed: !taskToUpdate.completed,
+        });
+
+        setTasks((prevTasks) =>
+          prevTasks.map((task) => (task.id === id ? updatedTask : task))
+        );
+
+        if (searchedTasks) {
+          setSearchedTasks((prevSearchedTasks) =>
+            prevSearchedTasks
+              ? prevSearchedTasks.map((task) =>
+                  task.id === id ? updatedTask : task
+                )
+              : null
+          );
+        }
+      }
+    } catch {
+      setError("Erro ao atualizar tarefa.");
+    }
   }
 
-  function handleDeleteTask(id: string) {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  async function handleDeleteTask(id: string) {
+    await deleteTask(id);
+    setTasks((prev) => prev.filter((task) => task.id !== id));
     setSelectedTask(null);
     setModalType(null);
   }
 
-  function handleEditTask() {
+  async function handleEditTask() {
     if (selectedTask && newTask.trim()) {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === selectedTask.id ? { ...task, text: newTask.trim() } : task
-        )
+      const updatedTask = await updateTask(selectedTask.id, {
+        text: newTask.trim(),
+        completed: selectedTask.completed,
+      });
+      setTasks((prev) =>
+        prev.map((task) => (task.id === selectedTask.id ? updatedTask : task))
       );
       setNewTask("");
       setSelectedTask(null);
@@ -61,17 +102,19 @@ export default function HomeScreen() {
     }
   }
 
-  function handleSearchTask(){
-    if(searchQuery.trim()){
-      const results = tasks.filter((task) => task.text.toLowerCase().includes(searchQuery.toLocaleLowerCase()));
+  function handleSearchTask() {
+    if (searchQuery.trim()) {
+      const results = tasks.filter((task) =>
+        task.text.toLowerCase().includes(searchQuery.toLowerCase())
+      );
       setSearchedTasks(results);
-    }
-    else{
+    } else {
       setSearchedTasks(null);
     }
+    Keyboard.dismiss();
   }
 
-  const filteredTasks = 
+  const filteredTasks =
     searchedTasks ?? (activeFilter === "created" ? tasks : tasks.filter((task) => task.completed));
 
   return (
@@ -90,6 +133,8 @@ export default function HomeScreen() {
           onChangeText={setSearchQuery}
           buttonIcon={<Icons.Search />}
           onButtonPress={handleSearchTask}
+          onSubmitEditing={handleSearchTask}
+          returnKeyType="search"
         />
 
         <Styles.TasksContent>
@@ -100,30 +145,36 @@ export default function HomeScreen() {
             onFilterChange={(filter) => setActiveFilter(filter)}
           />
 
-          <Styles.TaskItems showsVerticalScrollIndicator={false}>
-            <FlatList
-              data={filteredTasks}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <Task
-                  text={item.text}
-                  completed={item.completed}
-                  onToggle={() => handleToggleTask(item.id)}
-                  onDelete={() => {
-                    setSelectedTask(item);
-                    setModalType("details");
-                  }}
-                />
-              )}
-              ListEmptyComponent={
-                <EmptyState
-                  title="Você ainda não tem tarefas cadastradas"
-                  subtitle="Crie tarefas e organize seus itens a fazer"
-                />
-              }
-              scrollEnabled={false}
-            />
-          </Styles.TaskItems>
+          {isLoading ? (
+            <Styles.LoadingContainer>
+              <Loading />
+            </Styles.LoadingContainer>
+          ) : (
+            <Styles.TaskItems showsVerticalScrollIndicator={false}>
+              <FlatList
+                data={filteredTasks}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TaskItem
+                    text={item.text}
+                    completed={item.completed}
+                    onToggle={() => handleToggleTask(item.id)}
+                    onDelete={() => {
+                      setSelectedTask(item);
+                      setModalType("details");
+                    }}
+                  />
+                )}
+                ListEmptyComponent={
+                  <EmptyState
+                    title="Você ainda não tem tarefas cadastradas"
+                    subtitle="Crie tarefas e organize seus itens a fazer"
+                  />
+                }
+                scrollEnabled={false}
+              />
+            </Styles.TaskItems>
+          )}
         </Styles.TasksContent>
       </Styles.Main>
 
@@ -134,6 +185,17 @@ export default function HomeScreen() {
           onPress={() => setModalType("new")}
         />
       </Styles.AddTask>
+
+      <AlertModal
+        visible={!!error}
+        title="ERRO"
+        message={error || ""}
+        buttonLabel="Tentar novamente"
+        onButtonPress={() => {
+          setError(null);
+          fetchTasks();
+        }}
+      />
 
       <Modal
         visible={modalType === "new"}

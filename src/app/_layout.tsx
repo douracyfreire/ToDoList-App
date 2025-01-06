@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { colors, loadFonts } from "@/styles/theme";
-import { Loading } from "@/components/loading";
+import Loading from "@/components/loading";
 
 
 export default function Layout(){

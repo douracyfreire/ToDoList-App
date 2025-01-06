@@ -65,8 +65,14 @@ const ButtonItem = styled.View`
   flex: 1;
 `;
 
+const LoadingContainer = styled.View`
+  height: ${height * 0.60}px;
+  justify-content: center;
+  align-items: center;
+`;
+
 const Styles = {
- Container, Header, Logout, Main, TasksContent, TaskItems, AddTask, TaskDetails, ButtonRow, ButtonItem,
+ Container, Header, Logout, Main, TasksContent, TaskItems, AddTask, TaskDetails, ButtonRow, ButtonItem, LoadingContainer,
 }
 
 export default Styles;

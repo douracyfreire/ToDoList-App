@@ -2,16 +2,16 @@ import React from "react";
 import Styles from "./styles";
 import Icons from "@/assets/icons";
 
-interface TaskProps{
+interface TaskItemProps{
   text: string;
   completed: boolean;
   onToggle: () => void;
   onDelete:() => void;
 }
 
-export default function Task({
+export default function TaskItem({
   text, completed, onToggle, onDelete,
-} : TaskProps){
+} : TaskItemProps){
 
   return(
     <Styles.Container completed = {completed}>

@@ -1,5 +1,6 @@
 import React from "react";
 import Styles from "./styles";
+import { ReturnKeyTypeOptions } from "react-native"; 
 
 interface InputFieldProps {
  placeholder: string;
@@ -7,10 +8,12 @@ interface InputFieldProps {
  onChangeText: (text: string) => void;
  isPassword?: boolean;
  errorMessage?: string;
+ onSubmitEditing?: () => void;
+ returnKeyType?: ReturnKeyTypeOptions;
 }
 
 export default function InputField({
-  placeholder, value, onChangeText, isPassword = false, errorMessage,
+  placeholder, value, onChangeText, isPassword = false, errorMessage, onSubmitEditing, returnKeyType = "default"
 } : InputFieldProps){
 
  return(
@@ -21,6 +24,8 @@ export default function InputField({
       value={value}
       onChangeText={onChangeText}
       hasError={!!errorMessage}
+      onSubmitEditing = {onSubmitEditing}
+      returnKeyType={returnKeyType}
     />
     { errorMessage && <Styles.ErrorText>{errorMessage || ''}</Styles.ErrorText> }
   </Styles.Container>

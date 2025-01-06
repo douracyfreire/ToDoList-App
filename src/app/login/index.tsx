@@ -5,6 +5,7 @@ import Icons from "@/assets/icons";
 import InputField from "@/components/inputfield";
 import Button from "@/components/button";
 import ActionInput from "@/components/actioninput";
+import { login } from "@/services/taskServices";
 
 
 export default function LoginScreen(){
@@ -22,9 +23,35 @@ export default function LoginScreen(){
     return Object.keys(newErrors).length === 0;
   }
 
-  function handleLogin(){
-    if(validate()){
-      router.push('/home');
+  async function handleLogin(){
+    if(!validate()) return;
+
+    try{
+      await login(username, password);
+      router.push("/home");
+    }  
+    catch(error: any){
+      if(error.message === "USERNAME_INVALID"){
+        setErrors((prev) => ({
+          ...prev,
+          username: "Username inválido",
+          password: undefined,
+        }));
+      }
+      else if(error.message === "PASSWORD_INVALID"){
+        setErrors((prev) => ({
+          ...prev,
+          username: undefined,
+          password: "Senha inválida",
+        }));
+      }
+      else{
+        setErrors((prev) => ({
+          ...prev,
+          username: "Erro desconhecido",
+          password: "Erro desconhecido",
+        }));
+      }
     }
   }
 
@@ -36,14 +63,20 @@ export default function LoginScreen(){
     <InputField 
       placeholder="Username"
       value={username}
-      onChangeText={setUsername}
+      onChangeText={(text) => { 
+        setUsername(text);
+        setErrors((prev) => ({ ...prev, username: undefined }));
+      }}
       errorMessage={errors.username}
     />
 
     <ActionInput 
       placeholder="Password"
       value={password}
-      onChangeText={setPassword}
+      onChangeText={(text) => { 
+        setPassword(text);
+        setErrors((prev) => ({ ...prev, password: undefined }));
+      }}
       isSecure={!passwordVisible}
       buttonIcon={passwordVisible ? <Icons.Eye /> : <Icons.EyeOff />}
       onButtonPress={() => setPasswordVisible(!passwordVisible)}
