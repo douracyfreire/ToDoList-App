@@ -44,13 +44,24 @@ export default function HomeScreen() {
   }
 
   async function handleAddTask() {
-    if (newTask.trim()) {
+    if (!newTask.trim()) return;
+  
+    try {
       const createdTask = await createTask(newTask.trim());
-      setTasks((prev) => [...prev, createdTask]);
-      setNewTask("");
+      setTasks((prevTasks) => {
+        const taskExists = prevTasks.some((task) => task.id === createdTask.id);
+        if (!taskExists) {
+          return [...prevTasks, createdTask];
+        }
+        return prevTasks;
+      });
+      setNewTask(""); 
       setModalType(null);
+    } catch {
+      setError("Erro ao adicionar tarefa");
     }
   }
+  
 
   async function handleToggleTask(id: string) {
     try {
@@ -209,6 +220,7 @@ export default function HomeScreen() {
           buttonIcon={<Icons.PlusCircle />}
           onButtonPress={handleAddTask}
           disabledButton={!newTask.trim()}
+          multiline={true}
         />
       </Modal>
 
@@ -246,6 +258,7 @@ export default function HomeScreen() {
           buttonIcon={<Icons.PlusCircle />}
           onButtonPress={handleEditTask}
           disabledButton={!newTask.trim()}
+          multiline={true}
         />
       </Modal>
     </Styles.Container>

@@ -10,10 +10,11 @@ interface InputFieldProps {
  errorMessage?: string;
  onSubmitEditing?: () => void;
  returnKeyType?: ReturnKeyTypeOptions;
+ multiline?: boolean;
 }
 
 export default function InputField({
-  placeholder, value, onChangeText, isPassword = false, errorMessage, onSubmitEditing, returnKeyType = "default"
+  placeholder, value, onChangeText, isPassword = false, errorMessage, onSubmitEditing, returnKeyType = "default", multiline = false
 } : InputFieldProps){
 
  return(
@@ -26,6 +27,7 @@ export default function InputField({
       hasError={!!errorMessage}
       onSubmitEditing = {onSubmitEditing}
       returnKeyType={returnKeyType}
+      multiline={multiline}
     />
     { errorMessage && <Styles.ErrorText>{errorMessage || ''}</Styles.ErrorText> }
   </Styles.Container>

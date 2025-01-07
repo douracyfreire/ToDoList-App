@@ -6,9 +6,9 @@ export interface Task {
 
 const mockData = {
   tasks: [
-    {id: "1", text: "Tarefa 1", completed: false},
-    {id: "2", text: "Tarefa 2", completed: true},
-    {id: "3", text: "Tarefa 3", completed: false},
+    {id: "1", text: "Desenvolver uma lista de exercícios com equações de dificuldade progressiva.", completed: false},
+    {id: "2", text: "Estudar interfaces, tipos genéricos e como utilizá-los no contexto de React Native.", completed: true},
+    {id: "3", text: "Seguir o plano de treino definido e registrar desempenho para acompanhar progresso.", completed: false},
   ],
 };
 

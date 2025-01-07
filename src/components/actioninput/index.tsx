@@ -15,10 +15,11 @@ interface ActionInputProps{
  disabledButton?: boolean;
  onSubmitEditing?: () => void;
  returnKeyType?: ReturnKeyTypeOptions;
+ multiline?: boolean;
 }
 
 export default function ActionInput({
- value, onChangeText, placeholder, isSecure = false, errorMessage, buttonIcon, onButtonPress, disabledButton, onSubmitEditing, returnKeyType = "default"
+ value, onChangeText, placeholder, isSecure = false, errorMessage, buttonIcon, onButtonPress, disabledButton, onSubmitEditing, returnKeyType = "default", multiline = false
 } : ActionInputProps){
 
  return(
@@ -32,6 +33,7 @@ export default function ActionInput({
       errorMessage={errorMessage}
       onSubmitEditing = {onSubmitEditing}
       returnKeyType = {returnKeyType}
+      multiline={multiline}
     />
    </Styles.InputContainer>
 
