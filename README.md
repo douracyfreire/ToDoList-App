@@ -9,6 +9,7 @@ A task management application developed in React Native to help users organize t
 - [Expo Router](https://expo.github.io/router/docs) (v4.0.15)
 - [Styled-Components](https://styled-components.com) (v6.1.13)
 - [React Native SVG](https://github.com/react-native-svg/react-native-svg) (v15.8.0)
+- [Axios](https://axios-http.com) (v1.5.1)
 
 ## Prerequisites
 
@@ -52,6 +53,10 @@ Follow these steps to set up and run the project locally:
 
 4. **Prepare your environment:**
    - Install an Android or iOS emulator, or download the Expo Go app on your device for testing.
+
+## Video Demonstration
+
+For a detailed explanation of how this app works, watch the demonstration video available on Google Drive: [ToDoList-App Video Demonstration](https://drive.google.com/file/d/1OvPJE_ut56m3GIXVICX7hIPdkMv-IoeM/view?usp=sharing).
 
 ## Contributing
 
